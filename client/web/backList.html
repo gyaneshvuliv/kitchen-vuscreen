@@ -88,7 +88,7 @@ function getprodList() {
           if(itemList[i]["item_img_url"] == "") {
             img.setAttribute("src", "img/water.png");
           } else {
-            img.setAttribute("src", "img/water.png");
+            img.setAttribute("src", itemList[i]["item_img_url"]);
           }
           wsk_cp_img.appendChild(img);
           wsk_cp_product.appendChild(wsk_cp_img);
