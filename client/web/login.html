@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Login - MobiSign</title>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Responsive Signup with login form</title>
+    <link rel="stylesheet" href="css/signup.css" type="text/css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css"><link rel="stylesheet" href="./style.css">
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<div class="form-modal">
+    
+    <div class="form-toggle">
+        <button id="login-toggle" onclick="toggleLogin()">log in</button>
+        <button id="signup-toggle" onclick="toggleSignup()">sign up</button>
+    </div>
+
+    <div id="login-form">
+        <form id="login">
+            <input type="email" id="LoginEmail" placeholder="Enter email" required/>
+            <input type="password" id="LoginPass" placeholder="Enter password" required/>
+            <button type="submit" class="btn login">login</button>
+            <!-- <p><a href="javascript:void(0)">Forgotten account</a></p> -->
+        </form>
+    </div>
+
+    <div id="signup-form">
+        <form id="signup">
+            <input type="email" id="SEmail" placeholder="Enter your email" required/>
+            <input type="text" id="SUser" placeholder="Choose username" required />
+            <input type="password" id="Spassword" placeholder="Create password" required/>
+            <button type="submit" class="btn signup">create account</button>
+        </form>
+    </div>
+
+</div>
+<!-- partial -->
+<script src="js/jquery.min.js"></script>
+<script  src="js/signup.js"></script>
+<script>
+async function checkLogin() {
+    let myPromise = new Promise(function(myResolve, myReject) {
+        $.post("http://192.168.0.63:9632/api/vuscreen/login",
+        {
+            "email": $("#LoginEmail").val(),
+            "password": $("#LoginPass").val()
+        },
+           function(data, status){
+                localStorage.setItem("loginOk", JSON.stringify(data));
+                myResolve("Login Done");
+            });
+        });
+    console.log(await myPromise);
+    const LoginOk = JSON.parse(localStorage["loginOk"]);
+    if(LoginOk[0]["role"] == "user") {
+        window.location = "itemList.html";
+    }  else if(LoginOk[0]["role"] == "kitchen") {
+        window.location = "backList.html";
+    }
+}
+async function checksignup() {
+    let myPromise = new Promise(function(myResolve, myReject) {
+        $.post("http://192.168.0.63:9632/api/vuscreen/signup",
+        {
+            "user_name": $("#SUser").val(),
+            "email": $("#SEmail").val(),
+            "password": $("#Spassword").val(),
+            "role": "user",
+            "user_status": "active",
+        },
+           function(data, status){
+                myResolve(data);
+            });
+        });
+    alert(await myPromise);
+}
+$(document).ready(function() {
+    $("#login").submit(function() {
+        checkLogin();
+        return false;
+    });
+    $("#signup").submit(function() {
+        checksignup();
+        return false;
+    });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MobiSign</title>
+</head>
+<body>
+<script src="js/jquery.min.js"></script>
+<script>
+if(localStorage["loginOk"]) {
+    getItems();
+    const LoginOk = JSON.parse(localStorage["loginOk"]);
+    if(LoginOk[0]["role"] == "user") {
+        window.location = "itemList.html";
+    }  else if(LoginOk[0]["role"] == "kitchen") {
+        window.location = "backList.html";
+    }
+} else {
+    window.localStorage.clear();
+    window.location = "login.html";
+}
+async function getItems() {
+    let myPromise = new Promise(function(myResolve, myReject) {
+        $.get("http://192.168.0.63:9632/api/vuscreen/get/items",
+            function(data, status){
+                localStorage.setItem("itemList", JSON.stringify(data));
+                myResolve("Item list recived");
+            });
+        });
+    console.log(await myPromise);
+    window.location = "itemList.html";
+}
+</script>
+</body>
+</html>
