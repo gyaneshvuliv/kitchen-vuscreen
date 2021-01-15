@@ -41,7 +41,7 @@ if(!localStorage["loginOk"]) {
     window.location = "login.html";
 }
 function getItems(userID) {
-    $.post(hostName + "/api/vuscreen/get/user/order",
+    $.post("http://10.42.0.1:9632/api/vuscreen/get/user/order",
     {
         "user_id": userID
     },

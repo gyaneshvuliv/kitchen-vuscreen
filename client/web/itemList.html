@@ -43,7 +43,7 @@ if(!localStorage["loginOk"]) {
 }
 async function getItems() {
     let myPromise = new Promise(function(myResolve, myReject) {
-        $.get(hostName + "/api/vuscreen/get/items",
+        $.get("http://10.42.0.1:9632/api/vuscreen/get/items",
             function(data, status){
                 localStorage.setItem("itemList", JSON.stringify(data));
                 
@@ -56,7 +56,7 @@ async function sendItem(itemID, userID) {
   // alert(itemID+" "+ userID)
   // let myPromise = new Promise(function(myResolve, myReject, itemID, userID) {
   //     alert(itemID+" "+ userID)
-  //       $.post(hostName + "/api/vuscreen/add/order",
+  //       $.post("http://10.42.0.1:9632/api/vuscreen/add/order",
   //       {
   //         "item_id":itemID,
   //         "user_id": userID,
@@ -146,7 +146,7 @@ $(document).ready(function() {
           wcf_right_a.onclick = function() {
             
             // alert(itemList[i]["item_id"] +" "+ LoginOk[0]["id"])
-            $.post(hostName + "/api/vuscreen/add/order",
+            $.post("http://10.42.0.1:9632/api/vuscreen/add/order",
             {
               "item_id": itemList[i]["item_id"],
               "user_id": LoginOk[0]["id"],
