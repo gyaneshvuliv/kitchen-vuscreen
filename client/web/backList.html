@@ -28,6 +28,7 @@
 </div>
 <script src="js/jquery.min.js"></script>
 <script>
+var hostName = localStorage["hostName"];
 // if(!localStorage["backitemList"]) {
   getItems();
 // }
@@ -41,7 +42,7 @@ if(!localStorage["loginOk"]) {
 }
 async function getItems() {
     let myPromise = new Promise(function(myResolve, myReject) {
-        $.get("http://192.168.0.63:9632/api/vuscreen/get/active/order",
+        $.get(hostName + "/api/vuscreen/get/active/order",
             function(data, status){
                 localStorage.setItem("backitemList", JSON.stringify(data));
                 
@@ -84,7 +85,11 @@ function getprodList() {
         wsk_cp_img.setAttribute("class", "wsk-cp-img");
           let img = document.createElement("img");
           img.setAttribute("class", "img-responsive");
-          img.setAttribute("src", "img/water.png");
+          if(itemList[i]["item_img_url"] == "") {
+            img.setAttribute("src", "img/water.png");
+          } else {
+            img.setAttribute("src", "img/water.png");
+          }
           wsk_cp_img.appendChild(img);
           wsk_cp_product.appendChild(wsk_cp_img);
 
@@ -128,7 +133,7 @@ function getprodList() {
           wcf_left_span1.innerHTML = "Accept";
           wcf_left.appendChild(wcf_left_span1);
           wcf_left_span1.onclick = function() {
-            $.post("http://192.168.0.63:9632/api/vuscreen/update/order/status",
+            $.post(hostName + "/api/vuscreen/update/order/status",
             {
               "order_id": itemList[i]["order_id"],
               "order_status":"active",
@@ -145,7 +150,7 @@ function getprodList() {
           wcf_left_span2.innerHTML = "Decline";
           wcf_left.appendChild(wcf_left_span2);
           wcf_left_span2.onclick = function() {
-            $.post("http://192.168.0.63:9632/api/vuscreen/update/order/status",
+            $.post(hostName + "/api/vuscreen/update/order/status",
             {
               "order_id": itemList[i]["order_id"],
               "order_status":"decline",
@@ -161,7 +166,7 @@ function getprodList() {
           wcf_left_span3.innerHTML = "N/A";
           wcf_left.appendChild(wcf_left_span3);
           wcf_left_span3.onclick = function() {
-            $.post("http://192.168.0.63:9632/api/vuscreen/update/order/status",
+            $.post(hostName + "/api/vuscreen/update/order/status",
             {
               "order_id": itemList[i]["order_id"],
               "order_status":"decline",
@@ -177,7 +182,7 @@ function getprodList() {
           wcf_left_span4.innerHTML = "Delivered";
           wcf_left.appendChild(wcf_left_span4);
           wcf_left_span4.onclick = function() {
-            $.post("http://192.168.0.63:9632/api/vuscreen/update/order/status",
+            $.post(hostName + "/api/vuscreen/update/order/status",
             {
               "order_id": itemList[i]["order_id"],
               "order_status":"completed",

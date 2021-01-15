@@ -28,6 +28,7 @@
 </div>
 <script src="js/jquery.min.js"></script>
 <script>
+var hostName = localStorage["hostName"];
 const LoginOk = JSON.parse(localStorage["loginOk"]);
 // if(!localStorage["pendingitemList"]) {
   getItems(LoginOk[0]["id"]);
@@ -40,7 +41,7 @@ if(!localStorage["loginOk"]) {
     window.location = "login.html";
 }
 function getItems(userID) {
-    $.post("http://192.168.0.63:9632/api/vuscreen/get/user/order",
+    $.post(hostName + "/api/vuscreen/get/user/order",
     {
         "user_id": userID
     },
@@ -83,7 +84,11 @@ function getprodList() {
         wsk_cp_img.setAttribute("class", "wsk-cp-img");
           let img = document.createElement("img");
           img.setAttribute("class", "img-responsive");
-          img.setAttribute("src", "img/water.png");
+          if(itemList[i]["item_img_url"] == "") {
+            img.setAttribute("src", "img/water.png");
+          } else {
+            img.setAttribute("src", "img/water.png");
+          }
           wsk_cp_img.appendChild(img);
           wsk_cp_product.appendChild(wsk_cp_img);
 

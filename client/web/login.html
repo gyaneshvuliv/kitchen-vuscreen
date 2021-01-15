@@ -43,9 +43,10 @@
 <script src="js/jquery.min.js"></script>
 <script  src="js/signup.js"></script>
 <script>
+var hostName = localStorage["hostName"];
 async function checkLogin() {
     let myPromise = new Promise(function(myResolve, myReject) {
-        $.post("http://192.168.0.63:9632/api/vuscreen/login",
+        $.post(hostName + "/api/vuscreen/login",
         {
             "email": $("#LoginEmail").val(),
             "password": $("#LoginPass").val()
@@ -65,7 +66,7 @@ async function checkLogin() {
 }
 async function checksignup() {
     let myPromise = new Promise(function(myResolve, myReject) {
-        $.post("http://192.168.0.63:9632/api/vuscreen/signup",
+        $.post(hostName + "/api/vuscreen/signup",
         {
             "user_name": $("#SUser").val(),
             "email": $("#SEmail").val(),

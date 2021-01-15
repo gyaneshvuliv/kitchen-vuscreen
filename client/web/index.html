@@ -8,6 +8,10 @@
 <body>
 <script src="js/jquery.min.js"></script>
 <script>
+// window.localStorage.setItem("hostName", "http://192.168.0.82:9632");
+window.localStorage.setItem("hostName", "http://10.42.0.1:9632");
+// window.localStorage.setItem("hostName", " http://192.168.0.63:9632");
+var hostName = localStorage["hostName"];
 if(localStorage["loginOk"]) {
     getItems();
     const LoginOk = JSON.parse(localStorage["loginOk"]);
@@ -22,7 +26,7 @@ if(localStorage["loginOk"]) {
 }
 async function getItems() {
     let myPromise = new Promise(function(myResolve, myReject) {
-        $.get("http://192.168.0.63:9632/api/vuscreen/get/items",
+        $.get(hostName + "/api/vuscreen/get/items",
             function(data, status){
                 localStorage.setItem("itemList", JSON.stringify(data));
                 myResolve("Item list recived");
