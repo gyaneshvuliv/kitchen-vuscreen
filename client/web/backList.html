@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Back List - MobiSign</title>
+<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css'>
+<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css'>
+<link rel="stylesheet" href="css/itemList.css">
+<style>
+  #userName {
+    text-transform: capitalize;
+  }
+  #logout, .buy-btn {
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="container">
+    <h1>Welcome <b id="userName"></b></h1>
+    <div class="row" id="row">
+      
+      <!-- partial -->
+    </div>
+    <h1 id="logout">Logout</h1>
+</div>
+<script src="js/jquery.min.js"></script>
+<script>
+var hostName = localStorage["hostName"];
+// if(!localStorage["backitemList"]) {
+  getItems();
+// }
+const LoginOk = JSON.parse(localStorage["loginOk"]);
+if(LoginOk[0]["role"] == "user") {
+    window.location = "itemList.html";
+} 
+if(!localStorage["loginOk"]) {
+    window.localStorage.clear();
+    window.location = "login.html";
+}
+async function getItems() {
+    let myPromise = new Promise(function(myResolve, myReject) {
+        $.get("http://10.42.0.1:9632/api/vuscreen/get/active/order",
+            function(data, status){
+                localStorage.setItem("backitemList", JSON.stringify(data));
+                
+                myResolve("Item list received");
+            });
+        });
+    console.log(await myPromise);
+}
+$(document).ready(function() {
+  $("#logout").click(function() {
+    localStorage.clear();
+    window.location = "login.html";
+  });
+  $("#userName").text(LoginOk[0]["user_name"]);
+  getprodList();
+});
+var ins = setInterval(function() {
+  window.location.reload();
+},10000);
+function getprodList() {
+  console.clear();
+  const itemList = JSON.parse(localStorage["backitemList"]);
+  console.log(itemList);
+  let main = document.getElementById("row");
+  main.innerHTML = "";
+  if(itemList.length == 0) {
+    let h3 = document.createElement("h3");
+    h3.setAttribute("class", "container");
+    h3.innerHTML = "No Order Available";
+    main.appendChild(h3);
+  } else {
+  
+  for(let i=0; i< itemList.length; i++) {
+    // console.log(itemList[i]["item_id"]);
+    let col = document.createElement("div");
+    col.setAttribute("class", "col-md-3");
+      let wsk_cp_product = document.createElement("div");
+      wsk_cp_product.setAttribute("class", "wsk-cp-product");
+        let wsk_cp_img = document.createElement("div");
+        wsk_cp_img.setAttribute("class", "wsk-cp-img");
+          let img = document.createElement("img");
+          img.setAttribute("class", "img-responsive");
+          if(itemList[i]["item_img_url"] == "") {
+            img.setAttribute("src", "img/water.png");
+          } else {
+            img.setAttribute("src", itemList[i]["item_img_url"]);
+          }
+          wsk_cp_img.appendChild(img);
+          wsk_cp_product.appendChild(wsk_cp_img);
+
+          let wsk_cp_text = document.createElement("div");
+          wsk_cp_text.setAttribute("class", "wsk-cp-text");
+          wsk_cp_product.appendChild(wsk_cp_text);
+          let wsk_cp_text_category = document.createElement("div");
+          wsk_cp_text_category.setAttribute("class", "category");
+          wsk_cp_text.appendChild(wsk_cp_text_category);
+
+          let wsk_cp_text_category_span = document.createElement("span");
+          wsk_cp_text_category_span.innerHTML = itemList[i]["item_name"];
+          wsk_cp_text_category.appendChild(wsk_cp_text_category_span);
+
+          let wsk_cp_text_category_title_product = document.createElement("div");
+          wsk_cp_text_category_title_product.setAttribute("class", "title-product");
+          wsk_cp_text.appendChild(wsk_cp_text_category_title_product);
+
+          let wsk_cp_text_category_title_product_h3 = document.createElement("h3");
+          wsk_cp_text_category_title_product_h3.innerHTML = itemList[i]["user_name"];
+          wsk_cp_text_category_title_product.appendChild(wsk_cp_text_category_title_product_h3);
+          
+          let description_prod = document.createElement("div");
+          description_prod.setAttribute("class", "description-prod");
+          wsk_cp_text.appendChild(description_prod);
+          
+          let description_prod_P = document.createElement("p");
+          description_prod_P.innerHTML = itemList[i]["item_desc"];
+          description_prod.appendChild(description_prod_P);
+          
+          let card_footer = document.createElement("div");
+          card_footer.setAttribute("class", "card-footer");
+          wsk_cp_text.appendChild(card_footer);
+
+          let wcf_left = document.createElement("div");
+          wcf_left.setAttribute("class", "wcf-left");
+          card_footer.appendChild(wcf_left);
+
+          let wcf_left_span1 = document.createElement("button");
+          wcf_left_span1.setAttribute("class", "btn btn-success");
+          wcf_left_span1.innerHTML = "Accept";
+          wcf_left.appendChild(wcf_left_span1);
+          wcf_left_span1.onclick = function() {
+            $.post("http://10.42.0.1:9632/api/vuscreen/update/order/status",
+            {
+              "order_id": itemList[i]["order_id"],
+              "order_status":"active",
+              "order_acceptance_status":"Accepted"
+            },
+            function(data, status){                
+                console.log("Active " + data);
+                window.location.reload();
+            });
+          }
+
+          let wcf_left_span2 = document.createElement("button");
+          wcf_left_span2.setAttribute("class", "btn btn-danger");
+          wcf_left_span2.innerHTML = "Decline";
+          wcf_left.appendChild(wcf_left_span2);
+          wcf_left_span2.onclick = function() {
+            $.post("http://10.42.0.1:9632/api/vuscreen/update/order/status",
+            {
+              "order_id": itemList[i]["order_id"],
+              "order_status":"decline",
+              "order_acceptance_status":"Decline"
+            },
+            function(data, status){                
+                console.log("Decline " + data);
+                window.location.reload();
+            });
+          }
+          let wcf_left_span3 = document.createElement("button");
+          wcf_left_span3.setAttribute("class", "btn btn-default");
+          wcf_left_span3.innerHTML = "N/A";
+          wcf_left.appendChild(wcf_left_span3);
+          wcf_left_span3.onclick = function() {
+            $.post("http://10.42.0.1:9632/api/vuscreen/update/order/status",
+            {
+              "order_id": itemList[i]["order_id"],
+              "order_status":"decline",
+              "order_acceptance_status":"Not Available"
+            },
+            function(data, status){                
+                console.log("Decline " + data);
+                window.location.reload();
+            });
+          }
+          let wcf_left_span4 = document.createElement("button");
+          wcf_left_span4.setAttribute("class", "btn btn-info");
+          wcf_left_span4.innerHTML = "Delivered";
+          wcf_left.appendChild(wcf_left_span4);
+          wcf_left_span4.onclick = function() {
+            $.post("http://10.42.0.1:9632/api/vuscreen/update/order/status",
+            {
+              "order_id": itemList[i]["order_id"],
+              "order_status":"completed",
+              "order_acceptance_status":"Order Completed"
+            },
+            function(data, status){                
+                console.log("Completed " + data);
+                window.location.reload();
+            });
+          }
+          
+    col.appendChild(wsk_cp_product);
+  main.appendChild(col);
+      
+  }
+} // else
+}
+</script>
+</body>
+</html>
