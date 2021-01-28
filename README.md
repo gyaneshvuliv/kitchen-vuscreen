@@ -1,1 +1,1 @@
-# kitchen-vuscreen
+# spicescreen-ife

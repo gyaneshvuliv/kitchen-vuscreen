@@ -17,6 +17,7 @@ var config = require('./environment');
 var passport = require('passport');
 var session = require('express-session');
 var moment = require('moment')
+var cors = require('cors')
 // var multipart = require('connect-multiparty');
 // var multipartMiddleware = multipart();
 
@@ -41,13 +42,14 @@ module.exports = function(app) {
     saveUninitialized: true,
     cookie: { secure: true,maxAge:60000 * 335 },
     // store: new mongoStore({
-    //   mongooseConnection: mongoose.connection,
-    //   db: 'TimeBombGCM'
-    // })
-  }));
-  app.use(function(req, res, next) {
-    try{
-      if(req.url.toString().indexOf('/export/csv') > 0){
+      //   mongooseConnection: mongoose.connection,
+      //   db: 'TimeBombGCM'
+      // })
+    }));
+    app.use(cors());
+    app.use(function(req, res, next) {
+      try{
+        if(req.url.toString().indexOf('/export/csv') > 0){
         req.query.length = 100000;
       }
       next();

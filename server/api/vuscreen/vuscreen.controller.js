@@ -4,7 +4,7 @@ var _ = require('lodash');
 var db = require('../../config/mysql')
 var moment = require('moment');
 var request = require('request');
- 
+var io = require('socket.io').listen(3200);
 
 exports.IFE_registration = function (req, res) {
   const { name, mobile_no, device_id } = req.body
@@ -171,6 +171,20 @@ function getLogin(data) {
 
 }
 
+function verifyemail(data) {
+  return new Promise(function (myResolve, myReject) {
+    let query = `select * from tbl_user where email='${data.email}'`;
+    db.get().query(query, function (err, doc) {
+      if (err) { myResolve(err) }
+      else {
+
+        myResolve(doc);
+      }
+    })
+
+  });
+
+}
 function insertItem(data) {
   return new Promise(function (myResolve, myReject) {
     console.log(data);
@@ -257,6 +271,7 @@ function insertOrder(data) {
     db.get().query(query, post, function (err, doc) {
       if (err) { myResolve(err) }
       else {
+        io.emit('newOrder', 'new');
         myResolve("success");
       }
     })
@@ -284,9 +299,24 @@ function updateOrderStatus(data) {
 
 }
 
+function ordersocket(data) {
+  return new Promise(function (myResolve, myReject) {
+    let query = `select * from tbl_orders as a inner join tbl_items as b on a.item_id=b.item_id  where order_id=${data.order_id}`;
+   
+    db.get().query(query, function (err, doc) {
+      if (err) { myResolve(err) }
+      else {
+        io.emit('order', doc);
+        myResolve("success");
+      }
+    })
+
+  });
+
+}
 function getActiveOrders(data) {
   return new Promise(function (myResolve, myReject) {
-    let query = `select * from tbl_orders as a inner join tbl_user as b on a.user_id=b.id inner join tbl_items as c on a.item_id=c.item_id   where a.order_status="active" `;
+    let query = `select * from tbl_orders as a inner join tbl_user as b on a.user_id=b.id inner join tbl_items as c on a.item_id=c.item_id   where a.order_status="active" order by order_id desc `;
     db.get().query(query, function (err, doc) {
       if (err) { myResolve(err) }
       else {
@@ -301,7 +331,7 @@ function getActiveOrders(data) {
 
 function getUserOrders(data) {
   return new Promise(function (myResolve, myReject) {
-    let query = `select * from tbl_orders as a inner join tbl_user as b on a.user_id=b.id inner join tbl_items as c on a.item_id=c.item_id where a.user_id='${data.user_id}' `;
+    let query = `select * from tbl_orders as a inner join tbl_user as b on a.user_id=b.id inner join tbl_items as c on a.item_id=c.item_id where a.user_id='${data.user_id}'  order by order_id desc  `;
     db.get().query(query, function (err, doc) {
       if (err) { myResolve(err) }
       else {
@@ -324,5 +354,7 @@ module.exports={
   insertOrder:insertOrder,
   updateOrderStatus:updateOrderStatus,
   getActiveOrders:getActiveOrders,
-  getUserOrders:getUserOrders
+  getUserOrders:getUserOrders,
+  verifyemail:verifyemail,
+  ordersocket:ordersocket
 }
